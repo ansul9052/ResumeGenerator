@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeCraft Pro - Enterprise Resume Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .resume-section {
+            transition: all 0.3s ease;
+        }
+        .resume-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes gradient-x {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animate-gradient-x {
+            animation: gradient-x 15s ease infinite;
+            background-size: 200% 200%;
+        }
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%);
+            transition: all 0.3s ease;
+        }
+        .stats-card:hover {
+            transform: scale(1.02);
+        }
+        .hero-image {
+            background-image: url('https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            background-blend-mode: overlay;
+        }
+        .feature-image {
+            transition: all 0.3s ease;
+        }
+        .feature-image:hover {
+            transform: scale(1.05);
+        }
+        .testimonial-image {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .resume-paper {
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .resume-paper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            border-width: 0 16px 16px 0;
+            border-style: solid;
+            border-color: #f3f4f6 white;
+        }
+
+        .resume-content {
+            font-family: 'Inter', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .resume-header {
+            text-align: center;
+            border-bottom: 2px solid #2c5282;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .resume-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a365d;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+        }
+
+        .resume-title {
+            font-size: 1.25rem;
+            color: #2c5282;
+            font-weight: 500;
+        }
+
+        .resume-section {
+            margin-bottom: 2rem;
+        }
+
+        .resume-section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2c5282;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .resume-section-title svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.5rem;
+        }
+
+        .skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .skill-tag {
+            background-color: #ebf8ff;
+            color: #2c5282;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .skill-tag:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: #2c5282;
+            color: white;
+        }
+
+        .experience-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-left: 3px solid #2c5282;
+            background-color: #f8fafc;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .experience-title {
+            font-weight: 600;
+            color: #1a365d;
+            margin-bottom: 0.5rem;
+        }
+
+        .experience-date {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+
+        .education-item {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            background-color: #f8fafc;
+        }
+
+        /* Cover Letter Styles */
+        .cover-letter-content {
+            font-family: 'Inter', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.8;
+        }
+
+        .cover-letter-header {
+            text-align: right;
+            margin-bottom: 2rem;
+        }
+
+        .cover-letter-date {
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .cover-letter-recipient {
+            margin-bottom: 2rem;
+        }
+
+        .cover-letter-body {
+            text-align: justify;
+        }
+
+        .cover-letter-signature {
+            margin-top: 2rem;
+            font-weight: 600;
+        }
+
+        /* Loading Animation */
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .gradient-animate {
+            background: linear-gradient(-45deg, #1a365d, #2c5282, #3182ce, #4299e1);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+
+        .prose {
+            max-width: none;
+            color: #374151;
+        }
+        .prose p {
+            margin-bottom: 1rem;
+        }
+        .prose ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .hidden {
+            display: none;
+        }
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .loading-container {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        .loading-text {
+            font-size: 1.25rem;
+            color: #4b5563;
+            margin-bottom: 1rem;
+        }
+        .loading-subtext {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Modal Styles */
+        #conversionModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 50;
+            display: none;
+        }
+
+        #conversionModal.hidden {
+            display: none !important;
+        }
+
+        #conversionModal.flex {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 40;
+        }
+
+        .modal-content {
+            position: relative;
+            z-index: 60;
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-width: 90%;
+            width: 500px;
+            margin: 1.5rem;
+            transform: translateY(0);
+            opacity: 1;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
+
+        #conversionModal.flex .modal-content {
+            animation: modalSlideIn 0.3s ease-out forwards;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-1rem);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Conversion Modal Specific Styles */
+        #conversionModal .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #conversionModal .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        #conversionModal .close-button {
+            color: #6b7280;
+            transition: color 0.2s;
+        }
+
+        #conversionModal .close-button:hover {
+            color: #111827;
+        }
+
+        #conversionModal .upload-area {
+            padding: 2rem;
+            border: 2px dashed #e5e7eb;
+            border-radius: 0.75rem;
+            margin: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        #conversionModal .upload-area:hover {
+            border-color: #3b82f6;
+            background-color: #f8fafc;
+        }
+
+        #conversionModal .file-input-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        #conversionModal .file-input-button:hover {
+            background-color: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        #conversionModal .file-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f3f4f6;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #conversionModal .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #conversionModal .success-icon {
+            color: #10b981;
+            width: 3rem;
+            height: 3rem;
+            margin: 2rem auto;
+        }
+
+        #conversionModal .download-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background-color: #10b981;
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+
+        #conversionModal .download-button:hover {
+            background-color: #059669;
+            transform: translateY(-1px);
+        }
+
+        /* Modal Animation */
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .animate-fade-in {
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        /* Feature List Styles */
+        .feature-item {
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateX(5px);
+        }
+
+        /* Button Styles */
+        .upgrade-button {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transition: all 0.3s ease;
+        }
+
+        .upgrade-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .skip-button {
+            transition: all 0.3s ease;
+        }
+
+        .skip-button:hover {
+            color: #1f2937;
+        }
+
+        /* Debug styles for modal */
+        #conversionModal {
+            z-index: 9999;
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        #conversionModal .bg-white {
+            z-index: 10000;
+            position: relative;
+            opacity: 1 !important;
+            transform: none !important;
+        }
+
+        /* Modal Animations */
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes checkmark {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .animate-check {
+            animation: checkmark 0.5s ease-out forwards;
+        }
+
+        .animate-fade-in {
+            animation: modalFadeIn 0.3s ease-out forwards;
+        }
+
+        #conversionModal.show .modal-content {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Conversion Spinner */
+        .conversion-spinner {
+            position: relative;
+        }
+
+        .conversion-spinner::before,
+        .conversion-spinner::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            animation: pulse 2s ease-out infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div id="loadingOverlay">
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Generating your professional content</div>
+            <div class="loading-subtext">This may take a few moments...</div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="gradient-bg text-white hero-image">
+        <nav class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span class="text-lg font-semibold">ResumeCraft Pro</span>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="relative group">
+                        <button class="text-white hover:text-gray-200 transition duration-300 flex items-center space-x-1">
+                            <span>Features</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div class="absolute left-0 mt-2 w-80 opacity-0 translate-y-2 invisible group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-30">
+                            <div class="bg-white rounded-xl shadow-xl p-4 border border-gray-100">
+                                <div class="space-y-4">
+                                    <div class="flex items-start space-x-3 p-2 hover:bg-blue-50 rounded-lg transition duration-300">
+                                        <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center text-white">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold text-gray-800">AI-Powered Analysis</h3>
+                                            <p class="text-sm text-gray-600">Get instant feedback on your resume's match with job descriptions</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-start space-x-3 p-2 hover:bg-purple-50 rounded-lg transition duration-300">
+                                        <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center text-white">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold text-gray-800">Industry Templates</h3>
+                                            <p class="text-sm text-gray-600">50+ ATS-friendly templates tailored for your industry</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-start space-x-3 p-2 hover:bg-green-50 rounded-lg transition duration-300">
+                                        <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center text-white">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold text-gray-800">ATS Score</h3>
+                                            <p class="text-sm text-gray-600">Get your resume's ATS compatibility score and recommendations</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-start space-x-3 p-2 hover:bg-indigo-50 rounded-lg transition duration-300">
+                                        <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-lg flex items-center justify-center text-white">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold text-gray-800">Smart Formatting</h3>
+                                            <p class="text-sm text-gray-600">Auto-format your content for perfect presentation</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-start space-x-3 p-2 hover:bg-pink-50 rounded-lg transition duration-300 cursor-pointer" onclick="openConversionModal(event)">
+                                        <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-600 rounded-lg flex items-center justify-center text-white">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold text-gray-800">Convert Resume</h3>
+                                            <p class="text-sm text-gray-600">Transform your resume between PDF and Word formats</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" onclick="openPricingModal()" class="text-white hover:text-gray-200 transition duration-300">Pricing</button>
+                    <a href="#" class="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition duration-300 font-medium">Get Started</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mx-auto px-4 py-16 text-center">
+            <h1 class="text-5xl font-bold mb-6 animate-fade-in">Create Your Professional Resume</h1>
+            <p class="text-xl text-gray-200 mb-8 max-w-2xl mx-auto animate-fade-in">Stand out with AI-powered resume and cover letter generation. Used by professionals worldwide.</p>
+            <div class="flex justify-center animate-fade-in">
+                <a href="#resume-form" class="bg-white text-blue-600 px-12 py-4 rounded-lg hover:bg-gray-100 transition-all duration-300 font-medium text-lg transform hover:scale-105 hover:shadow-xl">Start Building</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Features Banner -->
+    <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 text-white py-4 relative overflow-hidden z-10">
+        <div class="absolute inset-0 bg-white opacity-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-gradient-x"></div>
+        <div class="container mx-auto px-4 relative">
+            <div class="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-5 h-5 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-lg font-semibold text-blue-100">Premium Features</span>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-4 text-sm text-blue-200">
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            AI-Powered Analysis
+                        </span>
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
+                            </svg>
+                            Professional Templates
+                        </span>
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            Priority Support
+                        </span>
+                    </div>
+                </div>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfhlLZoACUKyw4xLjZ5ruP7uJxV7wpLrChvPCWRjboaFZqcYA/viewform?usp=sharing" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="bg-white text-blue-600 px-6 py-2 rounded-lg hover:bg-blue-50 transition duration-300 font-medium transform hover:scale-105 shadow-lg hover:shadow-xl">
+                    <span class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Upgrade Now - ₹150
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple Pricing Modal -->
+    <div id="pricingModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800">Premium Features</h2>
+                        <button onclick="closePricingModal()" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-gray-700">AI-Powered Resume Analysis</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-gray-700">50+ Professional Templates</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-gray-700">24/7 Priority Support</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-gray-800 mb-2">₹150 <span class="text-base font-normal text-gray-600">one-time</span></div>
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfhlLZoACUKyw4xLjZ5ruP7uJxV7wpLrChvPCWRjboaFZqcYA/viewform?usp=sharing" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           class="block w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105">
+                            Upgrade Now
+                        </a>
+                        <p class="mt-3 text-sm text-gray-600">30-day money-back guarantee</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="container mx-auto px-4 py-16">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="stats-card p-8 rounded-xl text-white text-center relative overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" 
+                    class="absolute inset-0 w-full h-full object-cover opacity-20">
+                <div class="relative">
+                    <div class="text-4xl font-bold mb-2">10K+</div>
+                    <div class="text-gray-200">Resumes Generated</div>
+                </div>
+            </div>
+            <div class="stats-card p-8 rounded-xl text-white text-center relative overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" 
+                    class="absolute inset-0 w-full h-full object-cover opacity-20">
+                <div class="relative">
+                    <div class="text-4xl font-bold mb-2">95%</div>
+                    <div class="text-gray-200">Success Rate</div>
+                </div>
+            </div>
+            <div class="stats-card p-8 rounded-xl text-white text-center relative overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" 
+                    class="absolute inset-0 w-full h-full object-cover opacity-20">
+                <div class="relative">
+                    <div class="text-4xl font-bold mb-2">50+</div>
+                    <div class="text-gray-200">Professional Templates</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resume Form Section -->
+    <div id="resume-form" class="container mx-auto px-4 py-16">
+        <div class="max-w-6xl mx-auto">
+            <div class="bg-white rounded-xl shadow-xl p-8 resume-section animate-fade-in">
+                <h2 class="text-3xl font-bold text-center mb-8">Create Your Resume</h2>
+                <form id="resumeForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                            <input type="text" id="name" placeholder="John Doe" 
+                                class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Desired Job Role</label>
+                            <input type="text" id="jobRole" placeholder="Senior Software Engineer" 
+                                class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Industry</label>
+                        <select id="industry" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300">
+                            <option value="">Select an industry</option>
+                            <option value="tech">Technology</option>
+                            <option value="finance">Finance</option>
+                            <option value="marketing">Marketing</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Professional Summary</label>
+                        <textarea id="summary" placeholder="Experienced professional with expertise in..." 
+                            class="w-full p-4 border border-gray-300 rounded-lg h-32 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300"></textarea>
+                        <p class="text-sm text-gray-500 mt-1">Highlight your key achievements and career goals</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Key Skills</label>
+                        <textarea id="skills" placeholder="Python, JavaScript, React, AWS, Docker..." 
+                            class="w-full p-4 border border-gray-300 rounded-lg h-24 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300"></textarea>
+                        <p class="text-sm text-gray-500 mt-1">Separate skills with commas</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Work Experience</label>
+                        <textarea id="experience" placeholder="Senior Developer at Tech Corp (2020-2023)..." 
+                            class="w-full p-4 border border-gray-300 rounded-lg h-32 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300"></textarea>
+                        <p class="text-sm text-gray-500 mt-1">One experience per line</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Education</label>
+                        <textarea id="education" placeholder="Master's in Computer Science, University of..." 
+                            class="w-full p-4 border border-gray-300 rounded-lg h-24 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300"></textarea>
+                        <p class="text-sm text-gray-500 mt-1">Include degrees and certifications</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Target Job Description (Optional)</label>
+                        <textarea id="jobDescription" placeholder="Paste the job description here for personalized suggestions and job match analysis" 
+                            class="w-full p-4 border border-gray-300 rounded-lg h-32 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300"></textarea>
+                        <p class="text-sm text-gray-500 mt-1">Get personalized suggestions based on the job description</p>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <input type="checkbox" id="generateLinkedIn" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <label for="generateLinkedIn" class="text-sm font-medium text-gray-700">Generate LinkedIn Summary</label>
+                    </div>
+
+                    <button type="submit" 
+                        class="w-full bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 transition duration-300 font-medium transform hover:scale-105">
+                        Generate Professional Resume
+                    </button>
+        </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Output Section -->
+    <div id="output" class="container mx-auto px-4 py-16 hidden">
+        <div class="max-w-6xl mx-auto">
+            <div class="bg-white rounded-xl shadow-xl p-8 animate-fade-in">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Your Professional Resume</h2>
+                    <button id="downloadBtn" 
+                        class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-300 transform hover:scale-105">
+                        Download PDF
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">Resume</h3>
+                        <div id="resumeOutput" class="p-8 bg-white rounded-lg border border-gray-200 shadow-sm prose"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">Cover Letter</h3>
+                        <div id="coverLetterOutput" class="p-8 bg-white rounded-lg border border-gray-200 shadow-sm prose"></div>
+                    </div>
+                </div>
+
+                <div id="jobMatchSection" class="mt-8 hidden">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-700">Job Match Analysis</h3>
+                    <div class="p-8 bg-white rounded-lg border border-gray-200 shadow-sm prose"></div>
+                </div>
+
+                <div id="industrySuggestionsSection" class="mt-8 hidden">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-700">Industry-Specific Suggestions</h3>
+                    <div class="p-8 bg-white rounded-lg border border-gray-200 shadow-sm prose"></div>
+                </div>
+
+                <div id="linkedInSection" class="mt-8 hidden">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-700">LinkedIn Summary</h3>
+                    <div class="p-8 bg-white rounded-lg border border-gray-200 shadow-sm prose"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonials Section -->
+    <div class="gradient-bg text-white py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">What Our Users Say</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white bg-opacity-10 p-6 rounded-xl">
+                    <div class="flex items-center mb-4">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=60" 
+                            class="testimonial-image mr-4">
+                        <div>
+                            <h4 class="font-semibold">John Doe</h4>
+                            <p class="text-gray-300">Senior Developer</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-200">"The AI-powered resume generation is incredible. My resume looks professional and helped me land multiple interviews."</p>
+                </div>
+                <div class="bg-white bg-opacity-10 p-6 rounded-xl">
+                    <div class="flex items-center mb-4">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=60" 
+                            class="testimonial-image mr-4" alt="Alice Smith">
+                        <div>
+                            <h4 class="font-semibold">Alice Smith</h4>
+                            <p class="text-gray-300">Marketing Director</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-200">"The cover letter generator is a game-changer. It helped me craft the perfect letter for my dream job."</p>
+                </div>
+                <div class="bg-white bg-opacity-10 p-6 rounded-xl">
+                    <div class="flex items-center mb-4">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=60" 
+                            class="testimonial-image mr-4">
+                        <div>
+                            <h4 class="font-semibold">Robert Kim</h4>
+                            <p class="text-gray-300">"The professional templates and AI suggestions made my resume stand out. Highly recommended!"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">ResumeCraft Pro</h3>
+                    <p class="text-gray-400">Professional resume builder for modern job seekers</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Features</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">AI Resume Builder</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Cover Letter Generator</a></li>
+                        <li><a href="#" onclick="openAtsModal(event)" class="text-gray-400 hover:text-white transition duration-300">ATS Score</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Career Blog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Resume Tips</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Templates</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                <p class="text-gray-400">© 2024 ResumeCraft Pro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Old UI Pricing Section -->
+    <div id="oldPricingSection" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-300"></div>
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full transform transition-all duration-300" style="transform: scale(0.95); opacity: 0; transition: transform 0.3s ease-out, opacity 0.3s ease-out;">
+                <div class="p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-3xl font-bold text-gray-800">Unlock Premium Features</h2>
+                        <button id="closeOldPricing" class="text-gray-500 hover:text-gray-700 transition duration-300">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="space-y-8">
+                        <div class="flex items-center space-x-4 transform hover:scale-105 transition duration-300">
+                            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">AI-Powered Resume Analysis</h3>
+                                <p class="text-gray-600">Get personalized suggestions and improvements</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-4 transform hover:scale-105 transition duration-300">
+                            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Premium Templates</h3>
+                                <p class="text-gray-600">Access to 50+ professional templates</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-4 transform hover:scale-105 transition duration-300">
+                            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Priority Support</h3>
+                                <p class="text-gray-600">24/7 dedicated customer support</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 text-center bg-gradient-to-r from-blue-50 to-indigo-50 p-8 rounded-xl border border-blue-100">
+                            <div class="text-4xl font-bold text-gray-800 mb-4">₹150 <span class="text-lg text-gray-600">one-time</span></div>
+                            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfhlLZoACUKyw4xLjZ5ruP7uJxV7wpLrChvPCWRjboaFZqcYA/viewform?usp=sharing" 
+                               target="_blank" 
+                               rel="noopener noreferrer"
+                               class="inline-block w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-lg font-bold text-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                                Upgrade Now
+                            </a>
+                            <p class="mt-4 text-sm text-gray-600">30-day money-back guarantee</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ATS Score Modal -->
+    <div id="atsModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-75 backdrop-blur-sm"></div>
+            <div class="hidden sm:inline-block sm:align-middle sm:h-screen">&nbsp;</div>
+            <div class="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl sm:align-middle sm:max-w-2xl">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800">ATS Score Analysis</h3>
+                    <button id="closeAtsModal" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Upload State -->
+                <div id="uploadState" class="space-y-6">
+                    <div class="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 transition-colors duration-300">
+                        <!-- Initial Upload Icon -->
+                        <div id="uploadIcon" class="w-20 h-20 mb-4">
+                            <svg class="w-full h-full text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                        </div>
+
+                        <!-- File Type Icons (Hidden by default) -->
+                        <div id="fileIcon" class="hidden mb-4">
+                            <!-- PDF Icon -->
+                            <div id="pdfIcon" class="hidden animate-bounce">
+                                <svg class="w-20 h-20 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    <text x="8.5" y="16" class="text-sm font-bold" fill="currentColor">PDF</text>
+                                </svg>
+                            </div>
+                            <!-- Word Icon -->
+                            <div id="wordIcon" class="hidden animate-bounce">
+                                <svg class="w-20 h-20 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    <text x="7.5" y="16" class="text-sm font-bold" fill="currentColor">DOC</text>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Filename Display -->
+                        <div id="fileDetails" class="text-center hidden animate-fade-in">
+                            <p id="fileName" class="text-sm font-medium text-gray-700 mb-1"></p>
+                            <p id="fileSize" class="text-xs text-gray-500"></p>
+                        </div>
+
+                        <div class="text-center">
+                            <label class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors duration-300">
+                                <span>Choose Resume</span>
+                                <input type="file" id="resumeFile" class="hidden" accept=".pdf,.doc,.docx" />
+                            </label>
+                            <p class="mt-2 text-sm text-gray-600">PDF or Word documents only (max 5MB)</p>
+                        </div>
+                    </div>
+                    <button id="analyzeBtn" disabled class="w-full py-3 bg-blue-600 text-white rounded-lg opacity-50 cursor-not-allowed transition-all duration-300">
+                        Analyze Resume
+                    </button>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="hidden">
+                    <div class="flex flex-col items-center justify-center py-12">
+                        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
+                        <p class="mt-4 text-lg text-gray-700">Analyzing your resume...</p>
+                        <p class="text-sm text-gray-500">This may take a few moments</p>
+                    </div>
+                </div>
+
+                <!-- Results State -->
+                <div id="resultsState" class="hidden space-y-6">
+                    <!-- Overall Score -->
+                    <div class="text-center">
+                        <div class="inline-block">
+                            <div class="relative">
+                                <div class="text-5xl font-bold text-blue-600" id="overallScore">0%</div>
+                                <p class="text-gray-600 mt-2">Overall ATS Score</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Scores -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <h4 class="text-lg font-semibold mb-2">Format Score</h4>
+                            <ul id="formatDetails" class="space-y-2"></ul>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <h4 class="text-lg font-semibold mb-2">Keyword Score</h4>
+                            <ul id="keywordDetails" class="space-y-2"></ul>
+                        </div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div class="p-4 bg-blue-50 rounded-lg">
+                        <h4 class="text-lg font-semibold mb-2">Recommendations</h4>
+                        <ul id="recommendations" class="space-y-2"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conversion Modal -->
+    <div id="conversionModal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-md mx-auto relative">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-6 border-b">
+                    <h3 class="text-xl font-semibold text-gray-900">File Conversion</h3>
+                    <button id="closeConversionModal" class="text-gray-400 hover:text-gray-500">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Upload State -->
+                <div id="conversionUploadState" class="p-6">
+                    <div class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 transition-colors">
+                        <!-- Upload Icon -->
+                        <div id="conversionUploadIcon" class="mb-4">
+                            <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                        </div>
+
+                        <!-- File Icons -->
+                        <div id="conversionFileIcon" class="hidden mb-4">
+                            <div id="conversionPdfIcon" class="hidden">
+                                <svg class="w-16 h-16 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    <text x="8.5" y="16" class="text-sm font-bold" fill="currentColor">PDF</text>
+                                </svg>
+                            </div>
+                            <div id="conversionWordIcon" class="hidden">
+                                <svg class="w-16 h-16 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    <text x="7.5" y="16" class="text-sm font-bold" fill="currentColor">DOC</text>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- File Details -->
+                        <div id="conversionFileDetails" class="hidden text-center mb-4">
+                            <p id="conversionFileName" class="text-sm font-medium text-gray-700"></p>
+                            <p id="conversionFileSize" class="text-xs text-gray-500"></p>
+                        </div>
+
+                        <!-- Upload Button -->
+                        <label class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors">
+                            <span>Choose File</span>
+                            <input type="file" id="conversionFileInput" class="hidden" accept=".pdf,.doc,.docx" />
+                        </label>
+                        <p class="mt-2 text-sm text-gray-600">PDF or Word documents only (max 5MB)</p>
+                        <button id="conversionAnalyzeBtn" class="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Convert File
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="conversionLoadingState" class="hidden p-6">
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+                        <p class="mt-4 text-gray-700">Converting your file...</p>
+                    </div>
+                </div>
+
+                <!-- Success State -->
+                <div id="conversionSuccessState" class="hidden p-6">
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <h4 class="text-lg font-semibold text-gray-800 mb-2">Conversion Complete!</h4>
+                        <p class="text-gray-600 mb-4">Your file has been successfully converted</p>
+                        <a id="conversionDownloadLink" href="#" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            Download Converted File
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="ats.js"></script>
+    <script src="conversion.js" defer></script>
+</body>
+</html>

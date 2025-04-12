@@ -3,15 +3,16 @@ let isAuthenticated = false;
 let currentUser = null;
 
 // DOM Elements
-const authModal = document.getElementById('authModal');
-const authForm = document.getElementById('authForm');
-const authModeToggle = document.getElementById('authModeToggle');
+const authModal = document.getElementById('auth-modal');
+const authForm = document.getElementById('auth-form');
+const authModeToggle = document.getElementById('auth-switch');
 const authButton = document.getElementById('authButton');
+const closeAuthModalButton = document.getElementById('close-auth-modal');
 const userMenu = document.getElementById('userMenu');
 const userMenuButton = document.getElementById('userMenuButton');
 const logoutButton = document.getElementById('logoutButton');
-const googleLoginButton = document.getElementById('googleLoginButton');
-const facebookLoginButton = document.getElementById('facebookLoginButton');
+const googleLoginButton = document.getElementById('google-login');
+const facebookLoginButton = document.getElementById('facebook-login');
 
 // Initialize Facebook SDK
 window.fbAsyncInit = function() {
@@ -26,32 +27,47 @@ window.fbAsyncInit = function() {
 // Show auth modal
 function showAuthModal() {
     console.log('Showing auth modal');
-    authModal.style.display = 'flex';
-    authModal.style.opacity = '1';
-    authModal.classList.add('active');
+    const modal = document.getElementById('auth-modal');
+    if (modal) {
+        console.log('Modal found, showing it');
+        modal.style.display = 'flex';
+        modal.style.opacity = '1';
+        modal.classList.add('active');
+    } else {
+        console.error('Auth modal element not found');
+    }
 }
 
 // Hide auth modal
 function hideAuthModal() {
     console.log('Hiding auth modal');
-    authModal.style.opacity = '0';
-    setTimeout(() => {
-        authModal.style.display = 'none';
+    if (authModal) {
+        console.log('Modal found, hiding it');
+        authModal.style.opacity = '0';
         authModal.classList.remove('active');
-    }, 300);
+        setTimeout(() => {
+            authModal.style.display = 'none';
+        }, 300);
+    }
 }
 
 // Toggle between login and signup
 function toggleAuthMode() {
-    const isLogin = authForm.dataset.mode === 'login';
-    authForm.dataset.mode = isLogin ? 'signup' : 'login';
-    authForm.querySelector('h2').textContent = isLogin ? 'Create Account' : 'Welcome Back';
-    authForm.querySelector('button[type="submit"]').textContent = isLogin ? 'Sign Up' : 'Login';
-    authModeToggle.textContent = isLogin ? 'Already have an account? Login' : 'Need an account? Sign up';
-    const nameField = authForm.querySelector('#nameField');
-    if (nameField) {
-        nameField.style.display = isLogin ? 'block' : 'none';
-    }
+    console.log('Toggling auth mode');
+    const authTitle = document.getElementById('auth-title');
+    const submitText = document.getElementById('submit-text');
+    const nameField = document.getElementById('name-field');
+    const authSwitchText = document.getElementById('auth-switch-text');
+    const authSwitch = document.getElementById('auth-switch');
+
+    const isCurrentlyLogin = authTitle.textContent === 'Login';
+    
+    // Update UI elements
+    authTitle.textContent = isCurrentlyLogin ? 'Sign Up' : 'Login';
+    submitText.textContent = isCurrentlyLogin ? 'Sign Up' : 'Login';
+    nameField.style.display = isCurrentlyLogin ? 'block' : 'none';
+    authSwitchText.textContent = isCurrentlyLogin ? 'Already have an account? ' : 'Don\'t have an account? ';
+    authSwitch.textContent = isCurrentlyLogin ? 'Login' : 'Sign Up';
 }
 
 // Handle Google Login
@@ -186,8 +202,48 @@ function updateUI() {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, initializing auth...');
+    console.log('DOM Content Loaded');
     
+    // Add click handler for auth button
+    if (authButton) {
+        console.log('Auth button found, adding click listener');
+        authButton.addEventListener('click', function(e) {
+            console.log('Auth button clicked');
+            e.preventDefault();
+            e.stopPropagation();
+            showAuthModal();
+        });
+    } else {
+        console.error('Auth button not found');
+    }
+
+    // Add click handler for close button
+    if (closeAuthModalButton) {
+        console.log('Close button found, adding click listener');
+        closeAuthModalButton.addEventListener('click', function(e) {
+            console.log('Close button clicked');
+            e.preventDefault();
+            e.stopPropagation();
+            hideAuthModal();
+        });
+    }
+
+    // Close modal when clicking outside
+    if (authModal) {
+        authModal.addEventListener('click', function(e) {
+            if (e.target === authModal) {
+                hideAuthModal();
+            }
+        });
+    }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && authModal && authModal.style.display === 'flex') {
+            hideAuthModal();
+        }
+    });
+
     // Initialize Google Sign-In
     gapi.load('auth2', () => {
         gapi.auth2.init({
@@ -199,17 +255,75 @@ document.addEventListener('DOMContentLoaded', () => {
     checkSession();
 
     // Add click handlers
-    authButton.addEventListener('click', showAuthModal);
-    authModal.querySelector('.close-button').addEventListener('click', hideAuthModal);
-    authModeToggle.addEventListener('click', toggleAuthMode);
-    logoutButton.addEventListener('click', handleLogout);
-    googleLoginButton.addEventListener('click', handleGoogleLogin);
-    facebookLoginButton.addEventListener('click', handleFacebookLogin);
+    if (authModeToggle) {
+        authModeToggle.addEventListener('click', toggleAuthMode);
+    }
+    if (logoutButton) {
+        logoutButton.addEventListener('click', handleLogout);
+    }
+    if (googleLoginButton) {
+        googleLoginButton.addEventListener('click', handleGoogleLogin);
+    }
+    if (facebookLoginButton) {
+        facebookLoginButton.addEventListener('click', handleFacebookLogin);
+    }
 
-    // Close modal when clicking outside
-    authModal.addEventListener('click', (e) => {
-        if (e.target === authModal) {
-            hideAuthModal();
+    // Handle form submission
+    authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const isLogin = document.getElementById('auth-title').textContent === 'Login';
+        
+        if (!isLogin) {
+            // Handle Sign Up
+            const name = document.getElementById('name').value;
+            if (!name) {
+                alert('Please enter your name');
+                return;
+            }
+            
+            try {
+                // This is a mock signup - replace with your actual backend endpoint
+                const userData = {
+                    name: name,
+                    email: email,
+                    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
+                    provider: 'email'
+                };
+                
+                // Simulate successful signup
+                handleSuccessfulLogin({
+                    user: userData,
+                    token: 'mock-token-' + Date.now()
+                });
+                
+                alert('Successfully signed up!');
+            } catch (error) {
+                console.error('Signup error:', error);
+                alert('Failed to sign up. Please try again.');
+            }
+        } else {
+            // Handle Login
+            try {
+                // This is a mock login - replace with your actual backend endpoint
+                const userData = {
+                    email: email,
+                    name: 'User', // This would come from your backend
+                    avatar: `https://ui-avatars.com/api/?name=U&background=random`,
+                    provider: 'email'
+                };
+                
+                // Simulate successful login
+                handleSuccessfulLogin({
+                    user: userData,
+                    token: 'mock-token-' + Date.now()
+                });
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Failed to login. Please try again.');
+            }
         }
     });
 });

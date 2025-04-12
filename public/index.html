@@ -586,41 +586,43 @@
         }
 
         /* Auth Modal Styles */
-        .auth-modal {
-            display: none;
+        #auth-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 99999;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: none;
             opacity: 0;
-            transition: opacity 0.3s ease;
-            align-items: center;
+            transition: opacity 0.3s ease-in-out;
             justify-content: center;
+            align-items: center;
         }
 
-        .auth-modal.active {
-            display: flex !important;
+        #auth-modal.opacity-100 {
             opacity: 1;
         }
 
         .auth-modal-content {
             background: white;
             padding: 2rem;
-            border-radius: 1rem;
+            border-radius: 0.5rem;
             width: 90%;
             max-width: 400px;
-            transform: translateY(-20px);
-            transition: transform 0.3s ease;
-            position: relative;
-            z-index: 100000;
+            transform: translateY(0);
+            transition: transform 0.3s ease-in-out;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
-        .auth-modal.active .auth-modal-content {
-            transform: translateY(0);
+        #auth-button {
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        #auth-button:hover {
+            transform: scale(1.05);
         }
 
         .auth-form {
@@ -776,22 +778,22 @@
                     
                     <!-- User Icon for Login/Signup -->
                     <div class="relative" id="auth-buttons">
-                        <button type="button" id="auth-button" class="auth-icon-button bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 cursor-pointer z-50">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button type="button" onclick="showAuthModal()" id="authButton" class="auth-icon-button bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 cursor-pointer z-[9999] p-2 rounded-full">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </button>
                     </div>
 
                     <!-- User Menu (shown when logged in) -->
-                    <div id="user-menu" class="hidden relative">
-                        <button type="button" id="user-menu-button" class="auth-icon-button bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 cursor-pointer z-50">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div id="userMenu" class="hidden relative">
+                        <button type="button" id="userMenuButton" class="auth-icon-button bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 cursor-pointer z-[9999] p-2 rounded-full">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </button>
                         <div class="user-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1">
-                            <button onclick="logout()" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</button>
+                            <button id="logoutButton" onclick="handleLogout()" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</button>
                         </div>
                     </div>
                 </div>
@@ -799,15 +801,16 @@
         </nav>
 
         <!-- Auth Modal -->
-        <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-            <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 relative">
-                <button id="close-auth-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+        <div id="auth-modal" class="auth-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 transition-opacity duration-300" style="display: none;">
+            <div class="auth-modal-content bg-white rounded-lg shadow-xl p-8 w-full max-w-md mx-4 transform transition-transform duration-300 relative">
+                <!-- Close Button -->
+                <button type="button" id="close-auth-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 focus:outline-none cursor-pointer z-50">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
-                
-                <h2 id="auth-title" class="text-2xl font-bold mb-6 text-center">Login</h2>
+
+                <h2 id="auth-title" class="text-2xl font-bold mb-6 text-center text-gray-900">Login</h2>
                 
                 <!-- Social Login Buttons -->
                 <div class="space-y-4 mb-6">
@@ -840,18 +843,25 @@
                 
                 <form id="auth-form" class="space-y-4">
                     <div id="name-field" class="hidden">
-                        <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-                        <input type="text" id="name" name="name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                        <input type="text" id="name" name="name" 
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-black" 
+                            placeholder="Enter your full name">
                     </div>
                     
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                        <input type="email" id="email" name="email" required 
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-black" 
+                            placeholder="Enter your email">
                     </div>
                     
                     <div>
                         <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" id="password" name="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="password" id="password" name="password" required 
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-black" 
+                            style="-webkit-text-security-color: black;"
+                            placeholder="Enter your password">
                     </div>
                     
                     <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">

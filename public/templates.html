@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Resume Templates - ResumeCraft Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .template-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .template-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .ats-score {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-blue-600">ResumeCraft Pro</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-gray-600 hover:text-blue-600">Home</a>
+                    <a href="/templates.html" class="text-blue-600 font-semibold">Templates</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Premium Resume Templates</h1>
+            <p class="text-xl text-gray-600">Choose from our collection of ATS-optimized templates</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="flex justify-center space-x-4 mb-8">
+            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">All Templates</button>
+            <button class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100">Professional</button>
+            <button class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100">Creative</button>
+            <button class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100">Technical</button>
+        </div>
+
+        <!-- Templates Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Template 1 -->
+            <div class="template-card bg-white rounded-xl shadow-md overflow-hidden relative">
+                <div class="ats-score">ATS Score: 95</div>
+                <img src="/images/templates/template1.png" alt="Professional Template" class="w-full h-64 object-cover">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Professional Classic</h3>
+                    <p class="text-gray-600 mb-4">Clean and professional template perfect for corporate positions</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-blue-600 font-semibold">Premium</span>
+                        <button onclick="downloadTemplate('template1')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Download
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Template 2 -->
+            <div class="template-card bg-white rounded-xl shadow-md overflow-hidden relative">
+                <div class="ats-score">ATS Score: 92</div>
+                <img src="/images/templates/template2.png" alt="Creative Template" class="w-full h-64 object-cover">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Creative Modern</h3>
+                    <p class="text-gray-600 mb-4">Modern design with creative elements for creative industries</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-blue-600 font-semibold">Premium</span>
+                        <button onclick="downloadTemplate('template2')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Download
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Template 3 -->
+            <div class="template-card bg-white rounded-xl shadow-md overflow-hidden relative">
+                <div class="ats-score">ATS Score: 94</div>
+                <img src="/images/templates/template3.png" alt="Technical Template" class="w-full h-64 object-cover">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Technical Expert</h3>
+                    <p class="text-gray-600 mb-4">Structured layout ideal for technical and engineering roles</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-blue-600 font-semibold">Premium</span>
+                        <button onclick="downloadTemplate('template3')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Download
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add more templates here -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center">
+                <p>&copy; 2024 ResumeCraft Pro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function downloadTemplate(templateId) {
+            // Check if user is authenticated
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login to download premium templates');
+                window.location.href = '/';
+                return;
+            }
+
+            // Show loading state
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = 'Downloading...';
+            button.disabled = true;
+
+            // Make API call to download template
+            fetch(`/api/templates/${templateId}/download`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Download failed');
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                // Create download link
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${templateId}.docx`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+            })
+            .catch(error => {
+                console.error('Download error:', error);
+                alert('Failed to download template. Please try again.');
+            })
+            .finally(() => {
+                // Reset button state
+                button.textContent = originalText;
+                button.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html> 

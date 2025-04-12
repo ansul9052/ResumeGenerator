@@ -7,6 +7,78 @@ const { promisify } = require('util');
 const libre = require('libreoffice-convert');
 const convert = promisify(libre.convert);
 const PDFDocument = require('pdfkit');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+// JWT secret key (in production, use environment variable)
+const JWT_SECRET = 'your-secret-key';
+
+// In-memory user storage (replace with database in production)
+const users = new Map();
+
+// Authentication middleware
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ error: 'Access denied' });
+    }
+
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) {
+            return res.status(403).json({ error: 'Invalid token' });
+        }
+        req.user = user;
+        next();
+    });
+};
+
+// Authentication routes
+app.post('/api/signup', async (req, res) => {
+    try {
+        const { email, password, name } = req.body;
+        
+        if (users.has(email)) {
+            return res.status(400).json({ error: 'User already exists' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = {
+            email,
+            name,
+            password: hashedPassword
+        };
+
+        users.set(email, user);
+        
+        const token = jwt.sign({ email: user.email }, JWT_SECRET);
+        res.json({ token, user: { email: user.email, name: user.name } });
+    } catch (error) {
+        res.status(500).json({ error: 'Error creating user' });
+    }
+});
+
+app.post('/api/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = users.get(email);
+
+        if (!user) {
+            return res.status(400).json({ error: 'User not found' });
+        }
+
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) {
+            return res.status(400).json({ error: 'Invalid password' });
+        }
+
+        const token = jwt.sign({ email: user.email }, JWT_SECRET);
+        res.json({ token, user: { email: user.email, name: user.name } });
+    } catch (error) {
+        res.status(500).json({ error: 'Error logging in' });
+    }
+});
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -450,6 +522,14 @@ app.post('/convert-file', upload.single('file'), async (req, res) => {
         res.status(500).json({ error: 'Failed to convert file' });
     }
 });
+
+// Import routes
+const resumeRoutes = require('./src/routes/resumeRoutes');
+const templateRoutes = require('./src/routes/templateRoutes');
+
+// Use routes
+app.use('/api/resume', resumeRoutes);
+app.use('/api/templates', templateRoutes);
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
